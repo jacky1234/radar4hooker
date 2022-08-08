@@ -1,6 +1,6 @@
 rm -rf classes/
 mkdir classes
-find . -name "*.java">sources.txt
+find . -name "*.java" > sources.txt
 javac -encoding utf-8 -nowarn -Xlint:unchecked -Xlint:deprecation -classpath android.jar:android-support-v4.jar:nanohttpd-2.3.1.jar:fastjson-1.2.9.jar:org.apache.http.legacy.jar:okhttp-3.12.6.jar -d classes @sources.txt
 cp nanohttpd-2.3.1.jar classes/
 cp okhttp-3.12.6.jar classes/
