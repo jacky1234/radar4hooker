@@ -24,13 +24,13 @@ import java.util.Set;
 
 import gz.com.alibaba.fastjson.JSONArray;
 import gz.com.alibaba.fastjson.JSONObject;
-import gz.radar.Android;
 import gz.util.X;
 import gz.util.XLog;
+import gz.util.XView;
 
 public class AndroidUI {
 
-    private static final Thread keepScreenOnThread = new Thread(){
+    private static final Thread keepScreenOnThread = new Thread() {
 
         private Set<Class> activityFlags = new HashSet<>();
 
@@ -64,61 +64,62 @@ public class AndroidUI {
     };
 
     public final synchronized static void keepScreenOn() {
-       if (keepScreenOnThread.isAlive()) {
+        if (keepScreenOnThread.isAlive()) {
             return;
-       }
+        }
         keepScreenOnThread.start();
     }
 
 
     /**
      * 滑动
+     *
      * @param x
      * @param y
      * @param stepLength
      */
-    public static void hover(final float x,final float y,final int stepLength) {
+    public static void hover(final float x, final float y, final int stepLength) {
         Runnable runnable = new Runnable() {
             @Override
             public void run() {
-                Instrumentation iso= new Instrumentation();
-                iso.sendPointerSync(MotionEvent.obtain(SystemClock.uptimeMillis(),SystemClock.uptimeMillis(),MotionEvent.ACTION_DOWN, x, y, 0));
-                iso.sendPointerSync(MotionEvent.obtain(SystemClock.uptimeMillis(),SystemClock.uptimeMillis(),MotionEvent.ACTION_MOVE, x, y, 0));
-                iso.sendPointerSync(MotionEvent.obtain(SystemClock.uptimeMillis(),SystemClock.uptimeMillis()+20,MotionEvent.ACTION_MOVE, x, y-30*stepLength, 0));
-                iso.sendPointerSync(MotionEvent.obtain(SystemClock.uptimeMillis(),SystemClock.uptimeMillis()+40,MotionEvent.ACTION_MOVE, x, y-60*stepLength, 0));
-                iso.sendPointerSync(MotionEvent.obtain(SystemClock.uptimeMillis(),SystemClock.uptimeMillis()+60,MotionEvent.ACTION_MOVE, x, y-90*stepLength, 0));
-                iso.sendPointerSync(MotionEvent.obtain(SystemClock.uptimeMillis(),SystemClock.uptimeMillis()+60,MotionEvent.ACTION_UP, x, y-90*stepLength, 0));
+                Instrumentation iso = new Instrumentation();
+                iso.sendPointerSync(MotionEvent.obtain(SystemClock.uptimeMillis(), SystemClock.uptimeMillis(), MotionEvent.ACTION_DOWN, x, y, 0));
+                iso.sendPointerSync(MotionEvent.obtain(SystemClock.uptimeMillis(), SystemClock.uptimeMillis(), MotionEvent.ACTION_MOVE, x, y, 0));
+                iso.sendPointerSync(MotionEvent.obtain(SystemClock.uptimeMillis(), SystemClock.uptimeMillis() + 20, MotionEvent.ACTION_MOVE, x, y - 30 * stepLength, 0));
+                iso.sendPointerSync(MotionEvent.obtain(SystemClock.uptimeMillis(), SystemClock.uptimeMillis() + 40, MotionEvent.ACTION_MOVE, x, y - 60 * stepLength, 0));
+                iso.sendPointerSync(MotionEvent.obtain(SystemClock.uptimeMillis(), SystemClock.uptimeMillis() + 60, MotionEvent.ACTION_MOVE, x, y - 90 * stepLength, 0));
+                iso.sendPointerSync(MotionEvent.obtain(SystemClock.uptimeMillis(), SystemClock.uptimeMillis() + 60, MotionEvent.ACTION_UP, x, y - 90 * stepLength, 0));
             }
         };
         if (Thread.currentThread().getId() <= 2) {
             new Thread(runnable).start();
-        }else{
+        } else {
             runnable.run();
         }
     }
-    
+
     public static void showToast(final String text) throws Exception {
-    	Android.getTopActivity().runOnUiThread(new Runnable() {
-			@Override
-			public void run() {
-				try {
-					Toast.makeText(Android.getApplication(), text, Toast.LENGTH_LONG).show();
-				} catch (Exception e) {
-					e.printStackTrace();
-				}
-			}
-		});
+        Android.getTopActivity().runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    Toast.makeText(Android.getApplication(), text, Toast.LENGTH_LONG).show();
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+        });
     }
-    
+
     public static View getRootViewGroup() throws Exception {
-    	return Android.getTopActivity().getWindow().getDecorView();
+        return Android.getTopActivity().getWindow().getDecorView();
     }
-    
+
     public static View findViewByIdName(String idName) throws Exception {
         Application application = Android.getApplication();
-        Resources resources =  Android.getApplication().getResources();
+        Resources resources = Android.getApplication().getResources();
         int id = resources.getIdentifier(idName, "id", application.getPackageName());
-        if (id == 0 ) {
+        if (id == 0) {
             throw new Exception("Not Found View.");
         }
         return findViewById(id);
@@ -128,33 +129,33 @@ public class AndroidUI {
         Activity activity = Android.getTopActivity();
         View view = activity.findViewById(id);
         if (view != null) {
-        	return view;
+            return view;
         }
         List fragments = getFragments();
         if (fragments != null) {
-        	for (Object fragment : fragments) {
-            	try {
-    				View fragmentView = (View) X.invokeObject(fragment, "getView");
-    				view = fragmentView.findViewById(id);
-    				if (view != null) {
-    		        	return view;
-    		        }
-    			} catch (Exception e) {
-    				XLog.appendText(e);
-    			}
+            for (Object fragment : fragments) {
+                try {
+                    View fragmentView = (View) X.invokeObject(fragment, "getView");
+                    view = fragmentView.findViewById(id);
+                    if (view != null) {
+                        return view;
+                    }
+                } catch (Exception e) {
+                    XLog.appendText(e);
+                }
             }
         }
         return null;
     }
 
     public static List getFragments() {
-    	try {
-        	Object fm = X.invokeObject(Android.getTopActivity(), "getSupportFragmentManager");
-        	List fragments = (List) X.invokeObject(fm, "getFragments");
-        	return fragments;
-        }catch(Exception e) {
+        try {
+            Object fm = X.invokeObject(Android.getTopActivity(), "getSupportFragmentManager");
+            List fragments = (List) X.invokeObject(fm, "getFragments");
+            return fragments;
+        } catch (Exception e) {
         }
-    	return null;
+        return null;
     }
 
     public static boolean clickById(int id) throws Exception {
@@ -183,7 +184,7 @@ public class AndroidUI {
         };
         if (Thread.currentThread().getId() <= 2) {
             new Thread(runnable).start();
-        }else{
+        } else {
             runnable.run();
         }
     }
@@ -198,20 +199,20 @@ public class AndroidUI {
         Thread currentThread = Thread.currentThread();
         if (currentThread.getId() <= 2) {
             runnable.run();
-        }else{
+        } else {
             editText.post(runnable);
         }
         Thread.sleep(500);
         Runnable sendAction = new Runnable() {
             @Override
             public void run() {
-            	editText.onEditorAction(EditorInfo.IME_ACTION_SEARCH);
+                editText.onEditorAction(EditorInfo.IME_ACTION_SEARCH);
                 //editText.performAccessibilityAction(EditorInfo.IME_ACTION_SEARCH, null);
             }
         };
         if (currentThread.getId() <= 2) {
             sendAction.run();
-        }else{
+        } else {
             editText.post(sendAction);
         }
     }
@@ -224,7 +225,7 @@ public class AndroidUI {
         searchText((EditText) findViewByIdName(editTextIdName), text);
     }
 
-    public static < T extends View> List<T> collectViews(View containView, Class<T> tClass) throws Exception {
+    public static <T extends View> List<T> collectViews(View containView, Class<T> tClass) throws Exception {
         List<T> list = new ArrayList<>();
         Class<?> viewClass = containView.getClass();
         if (viewClass.getName().equals(tClass.getName()) || tClass.isAssignableFrom(viewClass)) {
@@ -301,14 +302,14 @@ public class AndroidUI {
                 try {
                     Instrumentation instrumentation = new Instrumentation();
                     instrumentation.sendKeyDownUpSync(KeyEvent.KEYCODE_BACK);
-                }catch (Exception e) {
+                } catch (Exception e) {
                     e.printStackTrace();
                 }
             }
         };
         if (Thread.currentThread().getId() <= 2) {
             new Thread(runnable).start();
-        }else{
+        } else {
             runnable.run();
         }
     }
@@ -320,75 +321,40 @@ public class AndroidUI {
                 try {
                     Instrumentation instrumentation = new Instrumentation();
                     instrumentation.sendKeyDownUpSync(KeyEvent.KEYCODE_HOME);
-                }catch (Exception e) {
+                } catch (Exception e) {
                     e.printStackTrace();
                 }
             }
         };
         if (Thread.currentThread().getId() <= 2) {
             new Thread(runnable).start();
-        }else{
+        } else {
             runnable.run();
         }
     }
 
     public static String viewTree() throws Exception {
         Activity activity = Android.getTopActivity();
-        Resources resources =  Android.getApplication().getResources();
-        return viewTreeScan(activity.getWindow().getDecorView(), 0, resources).toJSONString();
+        Resources resources = Android.getApplication().getResources();
+        return viewTreeScan(activity.getWindow().getDecorView()).toJSONString();
     }
 
-    private static JSONObject viewTreeScan(View decorView, int deep, Resources resources) throws Exception {
-        JSONObject root = new JSONObject();
-        root.put("ViewClass", decorView.getClass().getName());
-        root.put("ViewId", decorView.getId());
-        try{
-            String name = resources.getResourceEntryName(decorView.getId());
-            root.put("ViewIdName", name);
-        }catch (Resources.NotFoundException e) {
-        }
-        root.put("IsClickable", decorView.isClickable());
-        root.put("IsVisible", decorView.getVisibility() == View.VISIBLE);
-        root.put("IsEnabled", decorView.isEnabled());
-        root.put("IsFocusable", decorView.isFocusable());
-        root.put("IsFocused", decorView.isFocused());
-        root.put("IsHorizontalScrollBarEnabled", decorView.isHorizontalScrollBarEnabled());
-        root.put("IsLongClickable", decorView.isLongClickable());
-        root.put("IsSelected", decorView.isSelected());
-        root.put("IsShown", decorView.isShown());
-        root.put("Width", decorView.getWidth());
-        root.put("Height", decorView.getHeight());
-        root.put("X", decorView.getX());
-        root.put("Y", decorView.getY());
-        root.put("ViewDeep", deep);
-        if (decorView instanceof TextView) {
-            root.put("ViewText", ((TextView) decorView).getText().toString());
-        }else if (decorView instanceof ViewGroup) {
-            JSONArray childViewTree = new JSONArray();
-            ViewGroup viewGroup = (ViewGroup) decorView;
-            int newDeep = deep + 1;
-            for (int i = 0; i < viewGroup.getChildCount(); i ++) {
-                View childView = viewGroup.getChildAt(i);
-                JSONObject newRoot = viewTreeScan(childView, newDeep, resources);
-                childViewTree.add(newRoot);
-            }
-            root.put("ChildViews", childViewTree);
-        }
-        return root;
+    private static JSONObject viewTreeScan(View decorView) throws Exception {
+        return dumpBasicViewInfo(decorView);
     }
 
     public static boolean clickByText(String text) throws Exception {
-        return clickByText(text, false ,false);
+        return clickByText(text, false, false);
     }
 
-    public static boolean clickByText(String text, boolean mustBeTextEqueal, boolean mustBeVisible) throws Exception {
+    public static boolean clickByText(String text, boolean mustBeTextEqual, boolean mustBeVisible) throws Exception {
         Activity activity = Android.getTopActivity();
         if (activity == null) {
             return false;
         }
         View decorView = activity.getWindow().getDecorView();
-        View view = findViewByText(decorView, text, mustBeTextEqueal, mustBeVisible);
-        if (view  != null) {
+        View view = findViewByText(decorView, text, mustBeTextEqual, mustBeVisible);
+        if (view != null) {
             while (true) {
                 if (view.isClickable()) {
                     final View clickableView = view;
@@ -423,10 +389,10 @@ public class AndroidUI {
             String textViewText = textView.getText().toString().trim();
             if (mustBeTextEqueal && textViewText.equals(text)) {
                 return (T) textView;
-            }else if (textViewText.contains(text)) {
+            } else if (textViewText.contains(text)) {
                 return (T) textView;
             }
-        }else if (decorView instanceof ViewGroup) {
+        } else if (decorView instanceof ViewGroup) {
             ViewGroup viewGroup = (ViewGroup) decorView;
             int childCount = viewGroup.getChildCount();
             for (int i = 0; i < childCount; i++) {
@@ -439,14 +405,14 @@ public class AndroidUI {
         }
         return null;
     }
-    
+
     public static List<View> findViewsById(View decorView, int id) {
-    	List<View> views = new ArrayList<View>();
-    	if (decorView.getId() == id) {
-        	views.add(decorView);
-        	return views;
+        List<View> views = new ArrayList<View>();
+        if (decorView.getId() == id) {
+            views.add(decorView);
+            return views;
         }
-    	if (decorView instanceof ViewGroup) {
+        if (decorView instanceof ViewGroup) {
             ViewGroup viewGroup = (ViewGroup) decorView;
             int childCount = viewGroup.getChildCount();
             for (int i = 0; i < childCount; i++) {
@@ -454,7 +420,73 @@ public class AndroidUI {
                 views.addAll(findViewsById(childView, id));
             }
         }
-    	return views;
+        return views;
     }
 
+    public static String viewInfoByText(String text) throws Exception {
+        return viewInfoByText(text, true);
+    }
+
+    public static String viewInfoByText(String text, boolean mustBeTextEqual) throws Exception {
+        Activity activity = Android.getTopActivity();
+        if (activity == null) {
+            return "Top Activity not found";
+        }
+        View decorView = activity.getWindow().getDecorView();
+        final View findView = findViewByText(decorView, text, mustBeTextEqual, true);
+        if (findView == null) {
+            return "Can't find viewByText[" + text + "]";
+        }
+
+        final JSONObject root = dumpBasicViewInfo(findView);
+
+        final XView xView = new XView(findView);
+        final View.OnClickListener mOnClickListenerInfo;
+        try {
+            mOnClickListenerInfo = xView.getOnClickListener();
+            root.put("mOnClickListener", X.dumpFields(mOnClickListenerInfo));
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return root.toJSONString();
+    }
+
+    private static JSONObject dumpBasicViewInfo(View decorView) throws Exception {
+        JSONObject root = new JSONObject();
+        root.put("ViewClass", decorView.getClass().getName());
+        root.put("ViewId", decorView.getId());
+        try {
+            Resources resources = Android.getApplication().getResources();
+            String name = resources.getResourceEntryName(decorView.getId());
+            root.put("ViewIdName", name);
+        } catch (Resources.NotFoundException e) {
+        }
+        root.put("IsClickable", decorView.isClickable());
+        root.put("IsVisible", decorView.getVisibility() == View.VISIBLE);
+        root.put("IsEnabled", decorView.isEnabled());
+        root.put("IsFocusable", decorView.isFocusable());
+        root.put("IsFocused", decorView.isFocused());
+        root.put("IsHorizontalScrollBarEnabled", decorView.isHorizontalScrollBarEnabled());
+        root.put("IsLongClickable", decorView.isLongClickable());
+        root.put("IsSelected", decorView.isSelected());
+        root.put("IsShown", decorView.isShown());
+        root.put("Width", decorView.getWidth());
+        root.put("Height", decorView.getHeight());
+        root.put("X", decorView.getX());
+        root.put("Y", decorView.getY());
+        if (decorView instanceof TextView) {
+            root.put("ViewText", ((TextView) decorView).getText().toString());
+        } else if (decorView instanceof ViewGroup) {
+            ViewGroup viewGroup = (ViewGroup) decorView;
+            JSONArray childViewTree = new JSONArray();
+            for (int i = 0; i < viewGroup.getChildCount(); i++) {
+                View childView = viewGroup.getChildAt(i);
+                JSONObject newRoot = viewTreeScan(childView);
+                childViewTree.add(newRoot);
+            }
+            root.put("ChildViews", childViewTree);
+        }
+        return root;
+    }
 }
