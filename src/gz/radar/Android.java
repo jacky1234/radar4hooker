@@ -54,7 +54,7 @@ public class Android {
 			}
 		}
 		profile.put("type", intent.getType());
-		if (X.hasMehtod(intent, "getIdentifier")) {
+		if (X.hasMethod(intent, "getIdentifier")) {
 			profile.put("identifier", X.invokeObject(intent, "getIdentifier"));
 		}
 		profile.put("package", intent.getPackage());
