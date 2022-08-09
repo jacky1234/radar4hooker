@@ -10,3 +10,7 @@ radar.dex用于替换hooker根目录下的radar.dex
 https://github.com/jacky1234/hooker
 
 感谢支持！！！
+
+
+## 注意点
+一、请使用Jdk1.8编译、否则 Java.openClassFile(dexPath).load(); 可能加载失败

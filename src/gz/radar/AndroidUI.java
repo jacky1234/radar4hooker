@@ -335,7 +335,6 @@ public class AndroidUI {
 
     public static String viewTree() throws Exception {
         Activity activity = Android.getTopActivity();
-        Resources resources = Android.getApplication().getResources();
         return viewTreeScan(activity.getWindow().getDecorView()).toJSONString();
     }
 
