@@ -1,0 +1,13 @@
+#!/bin/bash
+if [ -z "$1" ]; then
+  echo "提交信息为空，终止执行。 Usage： push \${commit_msg}"
+  exit 1
+fi
+
+git add .
+git commit -m "$1"
+if [ $? -eq 0 ]; then
+  git push jacky main
+else
+  echo 'commit error ,cancel push'
+fi
