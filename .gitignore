@@ -11,6 +11,7 @@ libs/
 .classpath
 .project
 .settings/
+.log
 target/
 logs/
 data/doc/
