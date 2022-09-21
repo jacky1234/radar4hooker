@@ -1,0 +1,2 @@
+#!/bin/bash
+sh "$HOME"/myWidget/values/learnShell/src/tools/gsts "$@"

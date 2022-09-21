@@ -1,0 +1,2 @@
+rule gz.okhttp3.** okhttp3.@1
+rule gz.okio.** okio.@1
