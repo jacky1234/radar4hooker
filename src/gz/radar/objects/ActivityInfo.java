@@ -1,6 +1,7 @@
 package gz.radar.objects;
 
 import android.app.Activity;
+
 import gz.radar.AndroidApkField;
 import gz.util.X;
 import gz.util.XLog;
@@ -19,20 +20,20 @@ public class ActivityInfo extends ObjectInfo {
         super(activity);
         title = activity.getTitle().toString();
         try {
-        	Object fm = X.invokeObject(activity, "getSupportFragmentManager");
-        	List fragments = (List) X.invokeObject(fm, "getFragments");
-        	int i = 0;
-    		for (Object fragment : fragments) {
-    			String virtualVarName = "mFragment_"+i;
-    			String objectId = ObjectsStore.storeObject(fragment);
-    			addAndroidApkField(new AndroidApkField(virtualVarName, fragment.getClass(), false, -1, fragment, objectId));
-    			i++;
-    		}
-        }catch(Exception e) {
-        	XLog.appendText(e);
+            Object fm = X.invokeObject(activity, "getSupportFragmentManager");
+            List fragments = (List) X.invokeObject(fm, "getFragments");
+            int i = 0;
+            for (Object fragment : fragments) {
+                String virtualVarName = "mFragment_" + i;
+                String objectId = ObjectsStore.storeObject(fragment);
+                addAndroidApkField(new AndroidApkField(virtualVarName, fragment.getClass(), false, -1, fragment, objectId));
+                i++;
+            }
+        } catch (Exception e) {
+            XLog.appendText(e);
         }
     }
-    
+
 
     public boolean isOnTop() {
         return onTop;

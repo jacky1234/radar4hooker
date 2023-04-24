@@ -455,6 +455,9 @@ public class AndroidUI {
         JSONObject root = new JSONObject();
         root.put("ViewClass", decorView.getClass().getName());
         root.put("ViewId", decorView.getId());
+        if (decorView.getId() != -1) {
+            root.put("indentify_name", Android.getApplication().getResources().getResourceName(decorView.getId()));
+        }
         try {
             Resources resources = Android.getApplication().getResources();
             String name = resources.getResourceEntryName(decorView.getId());
