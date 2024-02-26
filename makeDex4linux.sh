@@ -19,3 +19,5 @@ dx --dex --output=classes/radar.dex classes/xradar.jar
 unalias dx
 echo "xradar.jar 用于你的爬虫工程."
 echo "radar.dex用于替换hooker根目录下的radar.dex"
+
+cp classes/radar.dex dist/.
