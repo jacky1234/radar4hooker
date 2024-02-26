@@ -26,6 +26,7 @@ import gz.com.alibaba.fastjson.JSONArray;
 import gz.com.alibaba.fastjson.JSONObject;
 import gz.util.X;
 import gz.util.XLog;
+import gz.util.XUI;
 import gz.util.XView;
 
 public class AndroidUI {
@@ -456,14 +457,9 @@ public class AndroidUI {
         root.put("ViewClass", decorView.getClass().getName());
         root.put("ViewId", decorView.getId());
         if (decorView.getId() != -1) {
-            root.put("indentify_name", Android.getApplication().getResources().getResourceName(decorView.getId()));
+            root.put("indentify_name", XUI.getResourceNameSafe(decorView.getId()));
         }
-        try {
-            Resources resources = Android.getApplication().getResources();
-            String name = resources.getResourceEntryName(decorView.getId());
-            root.put("ViewIdName", name);
-        } catch (Resources.NotFoundException e) {
-        }
+        root.put("ViewIdName", XUI.getResourceEntryNameSafe(decorView.getId()));
         root.put("IsClickable", decorView.isClickable());
         root.put("IsVisible", decorView.getVisibility() == View.VISIBLE);
         root.put("IsEnabled", decorView.isEnabled());
