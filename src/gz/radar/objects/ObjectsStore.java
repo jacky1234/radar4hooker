@@ -1,8 +1,12 @@
 package gz.radar.objects;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.Random;
+import java.util.Set;
 
 public class ObjectsStore {
 
@@ -62,5 +66,20 @@ public class ObjectsStore {
 		obj = objectCacheMap.get(objectId);
 		return obj;
 	}
-	
+
+	public synchronized static String dumpObjectIds() {
+		checks();
+		HashMap<String, Object> objectCacheMap = (HashMap<String, Object>) System.getProperties().get(ObjectCacheKey);
+		Set<Map.Entry<String, Object>> entries = objectCacheMap.entrySet();
+
+		StringBuilder stringBuilder = new StringBuilder("total all " + objectCacheMap.size() + " objectIds\n");
+		Iterator<Map.Entry<String, Object>> iterator = entries.iterator();
+		while (iterator.hasNext()) {
+			Map.Entry<String, Object> next = iterator.next();
+			stringBuilder.append("\tk: ").append(next.getKey()).append("\tv: ")
+					.append(next.getValue().getClass().getName())
+					.append("\n");
+		}
+		return stringBuilder.toString();
+	}
 }

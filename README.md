@@ -13,4 +13,5 @@ https://github.com/jacky1234/hooker
 
 
 ## 注意点
-一、请使用Jdk1.8编译、否则 Java.openClassFile(dexPath).load(); 可能加载失败
+1、请使用Jdk1.8编译、否则 Java.openClassFile(dexPath).load(); 可能加载失败
+2、尽量使用更加原始的特性。 如不要使用lambda、for each特性等等
