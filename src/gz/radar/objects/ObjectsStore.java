@@ -1,9 +1,7 @@
 package gz.radar.objects;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
-import java.util.List;
 import java.util.Map;
 import java.util.Random;
 import java.util.Set;
@@ -40,7 +38,6 @@ public class ObjectsStore {
 			System.getProperties().put(ObjectExistsFlagKey, new HashMap<Integer, String>());
 		}
 	}
-	
 
 	public synchronized static String storeObject(Object obj) {
 		checks();
@@ -67,7 +64,7 @@ public class ObjectsStore {
 		return obj;
 	}
 
-	public synchronized static String dumpObjectIds() {
+	public synchronized static String dump() {
 		checks();
 		HashMap<String, Object> objectCacheMap = (HashMap<String, Object>) System.getProperties().get(ObjectCacheKey);
 		Set<Map.Entry<String, Object>> entries = objectCacheMap.entrySet();
