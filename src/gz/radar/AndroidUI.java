@@ -24,12 +24,24 @@ import java.util.Set;
 
 import gz.com.alibaba.fastjson.JSONArray;
 import gz.com.alibaba.fastjson.JSONObject;
+import gz.radar.objects.ObjectsStore;
+import gz.util.HookException;
 import gz.util.X;
 import gz.util.XLog;
 import gz.util.XUI;
 import gz.util.XView;
 
 public class AndroidUI {
+
+    private static Class fragmentV4Clazz;
+
+    static {
+        try {
+            fragmentV4Clazz = Class.forName("android.support.v4.app.Fragment");
+        } catch (ClassNotFoundException e) {
+            e.printStackTrace();
+        }
+    }
 
     private static final Thread keepScreenOnThread = new Thread() {
 
@@ -132,7 +144,7 @@ public class AndroidUI {
         if (view != null) {
             return view;
         }
-        List fragments = getFragments();
+        List fragments = getFragments(Android.getTopActivity());
         if (fragments != null) {
             for (Object fragment : fragments) {
                 try {
@@ -149,12 +161,20 @@ public class AndroidUI {
         return null;
     }
 
-    public static List getFragments() {
+    public static List getFragments(Object obj) {
         try {
-            Object fm = X.invokeObject(Android.getTopActivity(), "getSupportFragmentManager");
-            List fragments = (List) X.invokeObject(fm, "getFragments");
-            return fragments;
+            Object fm = null;
+            if (obj instanceof Activity) {
+                fm = X.invokeObject(obj, "getSupportFragmentManager");
+            } else if (fragmentV4Clazz != null && fragmentV4Clazz.isAssignableFrom(obj.getClass())) {
+                fm = X.invokeObject(obj, "getChildFragmentManager");
+            }
+            if (fm != null) {
+                List fragments = (List) X.invokeObject(fm, "getFragments");
+                return fragments;
+            }
         } catch (Exception e) {
+            HookException.printStackTrace(e);
         }
         return null;
     }
@@ -452,6 +472,28 @@ public class AndroidUI {
         return root.toJSONString();
     }
 
+    public static String topFragments() {
+        JSONObject root = new JSONObject();
+
+        try {
+            Activity current = Android.getTopActivity();
+            root.put("currentActivityName", current.getClass().getName());
+            root.put("objectId", ObjectsStore.storeObject(current));
+            List fragments = getFragments(current);
+            if (fragments != null) {
+                JSONArray jsonArray = new JSONArray(fragments.size());
+                for (int i = 0; i < fragments.size(); i++) {
+                    jsonArray.add(dumpFragmentInfo(fragments.get(i)));
+                }
+                root.put("fragments", jsonArray);
+            }
+
+        } catch (Exception e) {
+            root.put("exception", e.getMessage());
+        }
+        return root.toString();
+    }
+
     private static JSONObject dumpBasicViewInfo(View decorView) throws Exception {
         JSONObject root = new JSONObject();
         root.put("ViewClass", decorView.getClass().getName());
@@ -484,6 +526,28 @@ public class AndroidUI {
                 childViewTree.add(newRoot);
             }
             root.put("ChildViews", childViewTree);
+        }
+        return root;
+    }
+
+    private static JSONObject dumpFragmentInfo(Object fragment) {
+        JSONObject root = new JSONObject();
+        try {
+            root.put("fragmentClazz", fragment.getClass().getName());
+            Object view = X.invokeObject(fragment, "getView");
+            root.put("rootViewClazz", view.getClass().getName());
+            root.put("rootViewId", X.invokeObject(view, "getId"));
+            root.put("fragmentObjectId", ObjectsStore.storeObject(fragment));
+            List fragments = getFragments(fragment);
+            if (fragments != null && fragments.size() > 0) {
+                JSONArray jsonArray = new JSONArray(fragments.size());
+                for (int i = 0; i < fragments.size(); i++) {
+                    jsonArray.add(dumpFragmentInfo(fragments.get(i)));
+                }
+                root.put("children", jsonArray);
+            }
+        } catch (Exception e) {
+            root.put("exception", e.getMessage());
         }
         return root;
     }
